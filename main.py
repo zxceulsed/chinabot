@@ -14,7 +14,7 @@ from aiogram.exceptions import TelegramBadRequest
 import sqlite3
 
 API_TOKEN = '7220938510:AAG5hMlCREOXmgFJyXoc1cVZOm1RLBC5Cd4'
-ADMIN_IDS = [7120064259]
+ADMIN_IDS = [7120064259,1085598151]
 class OrderStates(StatesGroup):
     waiting_for_price_buttons = State()  # Ожидание ввода цены (из кнопок)
     waiting_for_photo = State()          # Ожидание фото товара
@@ -424,11 +424,16 @@ async def main():
             return
 
         # Формируем итоговое сообщение для администраторов
-        total_price = sum(order[2] for order in orders)  # Суммируем все цены в BYN
+        total_price = sum(order[2] for order in orders)
         items_list = "\n".join([f"{i+1}. {order[0]} | {order[1]:.2f} ¥ | {order[2]:.2f} BYN" for i, order in enumerate(orders)])
 
+        # Создаем кликабельную ссылку на пользователя
+        user = message.from_user
+        username = f"@{user.username}" if user.username else user.full_name
+        user_link = f"[{username}](tg://user?id={user.id})"
+
         caption = (
-            f"🛒 Пользователь {message.from_user.full_name} ({message.from_user.id}) отправил заявку:\n\n"
+            f"🛒 Пользователь {user_link} отправил заявку:\n\n"
             f"{items_list}\n\n"
             f"Итоговая сумма: {total_price:.2f} BYN\n"
         )
@@ -436,23 +441,24 @@ async def main():
         # Отправляем товары администраторам
         for admin_id in ADMIN_IDS:
             try:
-                # Формируем список медиа
                 media_group = []
                 for index, order in enumerate(orders):
                     if index == 0:
-                        media_group.append(InputMediaPhoto(media=order[3], caption=caption))
+                        media_group.append(InputMediaPhoto(
+                            media=order[3],
+                            caption=caption,
+                            parse_mode="Markdown"
+                        ))
                     else:
                         media_group.append(InputMediaPhoto(media=order[3]))
 
-                # Отправляем медиагруппу администратору
                 await bot.send_media_group(chat_id=admin_id, media=media_group)
 
             except TelegramBadRequest:
-                await bot.send_message(admin_id, f"Ошибка при отправке заявки от пользователя {message.from_user.id}. Проверьте данные.")
+                await bot.send_message(admin_id, f"Ошибка при отправке заявки от пользователя {user.id}. Проверьте данные.")
 
-        # Уведомляем пользователя, что заявка отправлена
-        await message.answer("✅ Ваша заявка успешно отправлена менеджеру!",reply_markup=main_menu_keyboard())
-        
+        await message.answer("✅ Ваша заявка успешно отправлена менеджеру!", reply_markup=main_menu_keyboard())
+            
     @dp.message(F.text == "Удалить Товар")
     async def otmena_zakaza(message: Message, state: FSMContext):
         user_id = message.from_user.id
