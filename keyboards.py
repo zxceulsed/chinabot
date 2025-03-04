@@ -77,17 +77,15 @@ def TOVAR_keyboard():
 
 def society_keyboard():
     buttons = [
-        [InlineKeyboardButton(text="VK", url="https://vk.com")],
-        [InlineKeyboardButton(text="Instagram", url="https://instagram.com/example")],
-        [InlineKeyboardButton(text="TikTok", url="https://tiktok.com")]
+        [InlineKeyboardButton(text="В наличии", url="https://web.telegram.org/a/#-1002270868532")],
+        [InlineKeyboardButton(text="Вопросы по заказу к", url="https://web.telegram.org/a/#7120064259")]
     ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)  # Передаём inline_keyboard явно
     return keyboard
 
 def otzivi_keyboard():
     buttons = [
-        [InlineKeyboardButton(text="В Telegram", url="https://Telegram.com")],
-        [InlineKeyboardButton(text="В VK", url="https://VK.COM")]
+        [InlineKeyboardButton(text="В Telegram", url="https://web.telegram.org/a/#-1002110637576")]
     ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)  # Передаём inline_keyboard явно
     return keyboard
