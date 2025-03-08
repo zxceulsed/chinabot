@@ -431,7 +431,7 @@ async def main():
         user = message.from_user
         username = f"@{user.username}" if user.username else user.full_name
         user_link = f"[{username}](tg://user?id={user.id})"
-
+  
         caption = (
             f"🛒 Пользователь {user_link} отправил заявку:\n\n"
             f"{items_list}\n\n"
